@@ -4,7 +4,15 @@ import GoogleIcon from "../assets/icons/GoogleIcon";
 import { AuthContext } from "../context/AuthContext";
 
 const Login = () => {
-  return <div>Login</div>;
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const { signIn, signUpProvider } = useContext(AuthContext);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    signIn(email, password);
+  };
+  return 
 };
 
 export default Login;
