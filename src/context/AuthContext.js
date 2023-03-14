@@ -3,6 +3,7 @@ import {
   onAuthStateChanged,
   signInWithEmailAndPassword,
   signOut,
+  updateProfile,
 } from "firebase/auth";
 import React, { createContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -24,7 +25,7 @@ const AuthContextProvider = ({ children }) => {
     userObserver();
   }, []);
 
-  const createUser = async (email, password) => {
+  const createUser = async (email, password, displayName) => {
     try {
       //? yeni bir kullanıcı oluşturmak için kullanılan firebase metodu
       let userCredential = await createUserWithEmailAndPassword(
@@ -32,6 +33,10 @@ const AuthContextProvider = ({ children }) => {
         email,
         password
       );
+      //? kullanıcı profilini güncellemek için kullanılan firebase metodu
+      await updateProfile(auth.currentUser, {
+        displayName: displayName,
+      });
       navigate("/");
       toastSuccessNotify("Registered successfully!");
     } catch (error) {
@@ -58,6 +63,7 @@ const AuthContextProvider = ({ children }) => {
   };
 
   const userObserver = () => {
+    //? Kullanıcının signin olup olmadığını takip eden ve kullanıcı değiştiğinde yeni kullanıcıyı response olarak dönen firebase metodu
     onAuthStateChanged(auth, (user) => {
       if (user) {
         const { email, displayName, photoURL } = user;
