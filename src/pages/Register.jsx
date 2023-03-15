@@ -26,6 +26,7 @@ const Register = () => {
   // const { email, password, firstName, lastName } = info;
   // const hadleChange = (e) =>
   //   setInfo({ ...info, [e.target.id]: e.target.value });
+
   return (
     <div className="overflow-hidden flex-1 h-screen justify-center items-center bg-[#23242a]">
       <div className={`form-container mt-[5vh] w-[380px] h-[580px]`}>
@@ -36,18 +37,18 @@ const Register = () => {
           <div className="relative z-0 w-full mb-6 group">
             <input
               type="text"
-              name="floating_email"
+              name="floating_text"
               className="peer"
               placeholder=" "
               required
               onChange={(e) => setFirstName(e.target.value)}
             />
-            <label htmlFor="floating_email">Email address</label>
+            <label htmlFor="floating_email">First Name</label>
           </div>
           <div className="relative z-0 w-full mb-6 group">
             <input
               name="floating_text"
-               type="text"
+              type="text"
               required
               className="peer"
               placeholder=" "

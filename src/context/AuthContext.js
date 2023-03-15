@@ -2,6 +2,7 @@ import {
   createUserWithEmailAndPassword,
   GoogleAuthProvider,
   onAuthStateChanged,
+  sendPasswordResetEmail,
   signInWithEmailAndPassword,
   signInWithPopup,
   signOut,
@@ -10,7 +11,11 @@ import {
 import React, { createContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { auth } from "../auth/firebase";
-import { toastErrorNotify, toastSuccessNotify } from "../helpers/ToastNotify";
+import {
+  toastErrorNotify,
+  toastSuccessNotify,
+  toastWarnNotify,
+} from "../helpers/ToastNotify";
 
 // export const {Provider} = createContext()
 export const AuthContext = createContext();
@@ -20,7 +25,9 @@ export const AuthContext = createContext();
 //   };
 
 const AuthContextProvider = ({ children }) => {
-  const [currentUser, setCurrentUser] = useState("");
+  const [currentUser, setCurrentUser] = useState(
+    JSON.parse(sessionStorage.getItem("user")) || false
+  );
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -70,14 +77,19 @@ const AuthContextProvider = ({ children }) => {
       if (user) {
         const { email, displayName, photoURL } = user;
         setCurrentUser({ email, displayName, photoURL });
+        sessionStorage.setItem(
+          "user",
+          JSON.stringify({ email, displayName, photoURL })
+        );
       } else {
         setCurrentUser(false);
+        sessionStorage.clear();
         // console.log("logged out");
       }
     });
   };
 
-//* https://console.firebase.google.com/
+  //* https://console.firebase.google.com/
   //* => Authentication => sign-in-method => enable Google
   //! Google ile girişi enable yap
   //* => Authentication => settings => Authorized domains => add domain
@@ -97,11 +109,26 @@ const AuthContextProvider = ({ children }) => {
       });
   };
 
+  const forgotPassword = (email) => {
+    //? Email yoluyla şifre sıfırlama için kullanılan firebase metodu
+    sendPasswordResetEmail(auth, email)
+      .then(() => {
+        // Password reset email sent!
+        toastWarnNotify("Please check your mail box!");
+        // alert("Please check your mail box!");
+      })
+      .catch((err) => {
+        toastErrorNotify(err.message);
+        // alert(err.message);
+        // ..
+      });
+  };
   const values = {
     createUser,
     signIn,
     logOut,
     signUpProvider,
+    forgotPassword,
     currentUser,
   };
   return <AuthContext.Provider value={values}>{children}</AuthContext.Provider>;
